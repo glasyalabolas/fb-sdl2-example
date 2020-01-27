@@ -5,7 +5,13 @@
 #define pixelsOf( buffer ) _
   cptr( ulong ptr, _
     ( buffer ) ) + sizeOf( Fb.Image ) \ sizeOf( ulong )
-  
+
+'' Masks for the color components
+#define __R_MASK__ &h00ff0000
+#define __G_MASK__ &h0000ff00
+#define __B_MASK__ &h000000ff
+#define __A_MASK__ &hff000000
+
 const as string _
   exampleTitle => "SDL2 Initialization example"
 
@@ -92,10 +98,10 @@ var _
     pixelsOf( buffer ), _
     bw, bh, 32, _
     buffer->pitch, _
-    &h00FF0000, _
-    &h0000FF00, _
-    &h000000FF, _
-    &hFF000000 )
+    __R_MASK__, _
+    __G_MASK__, _
+    __B_MASK__, _
+    __A_MASK__ )
 
 '' ...and a rectangle to define the extents to copy to.
 dim as SDL_Rect _
