@@ -117,9 +117,9 @@ do while( not done )
         done => true
       end select
   loop
-	
-	'' Always delay a little
-	SDL_Delay( 2 )
+  
+  '' Always delay a little
+  SDL_Delay( 2 )
 loop
 
 /'
