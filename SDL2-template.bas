@@ -2,9 +2,9 @@
 #include once "SDL2/SDL2.bi"
 
 '' To get the pixel area of a Fb.Image buffer
-#define getPixels( b ) _
+#define pixelsOf( buffer ) _
   cptr( ulong ptr, _
-    ( b ) ) + sizeOf( Fb.Image ) \ sizeOf( ulong )
+    ( buffer ) ) + sizeOf( Fb.Image ) \ sizeOf( ulong )
   
 const as string _
   exampleTitle => "SDL2 Initialization example"
@@ -18,14 +18,14 @@ dim as integer _
 
 /'
   To be able to use FBGFX buffers and standard primitives, you
-  need to initialize FBGFX using the null driver, like this
+  need to initialize FBGFX using the null driver, like this:
 '/
 screenRes( _
   scrW, scrH, 32, , Fb.GFX_NULL )
 screenControl( _
   Fb.SET_ALPHA_PRIMITIVES, 1 )
 
-'' Create a SDL2 window
+'' Create a SDL2window
 var _
   wnd => SDL_CreateWindow( _
     exampleTitle, _
@@ -46,20 +46,40 @@ var _
 
 '' Create a Fb.Image bitmap to draw
 dim as integer _
-  sw => 800, _
-  sh => 600
+  bw => 800, _
+  bh => 600
 
 dim as Fb.Image ptr _
-  pixels => imageCreate( _
-    sw, sh, rgba( 255, 128, 64, 255 ) )
+  buffer => imageCreate( _
+    bw, bh, rgba( 255, 128, 64, 255 ) )
 
+/'
+  Let's draw something on the FBGFX buffer
+'/
 dim as string _
   text => "Hello SDL2!"
 
+randomize()
+
+for _
+  i as integer => 1 _
+  to 500
+  
+  line _
+    buffer, _
+    ( rnd() * bw, rnd() * bh ) - _
+    ( rnd() * bw, rnd() * bh ), _
+    rgba( _
+      rnd() * &hff, _
+      rnd() * &hff, _
+      rnd() * &hff, _
+      rnd() * &hff )
+next
+
 draw string _
-  pixels, _
-  ( ( sw - len( text ) * 8 ) \ 2, _
-    ( sh - 8 ) \ 2 ), _
+  buffer, _
+  ( ( bw - len( text ) * 8 ) \ 2, _
+    ( bh - 8 ) \ 2 ), _
   text, _
   rgba( 0, 0, 255, 255 )
 
@@ -69,9 +89,9 @@ draw string _
 '/
 var _
   SDLSurface => SDL_CreateRGBSurfaceFrom( _
-    getPixels( pixels ), _
-    sw, sh, 32, _
-    pixels->pitch, _
+    pixelsOf( buffer ), _
+    bw, bh, 32, _
+    buffer->pitch, _
     &h00FF0000, _
     &h0000FF00, _
     &h000000FF, _
@@ -88,6 +108,12 @@ dim as SDL_Rect _
 var _
   texture => SDL_CreateTextureFromSurface( _
     renderer, SDLSurface )
+
+/'
+  Once the texture is created this way, the SDL surface is no
+  longer needed so we can dispose of it.
+'/
+SDL_FreeSurface( SDLSurface )
 
 dim as boolean _
   done
@@ -125,10 +151,9 @@ loop
   And that's pretty much all there is to it. Cleanup follows.
 '/
 SDL_DestroyTexture( texture )
-SDL_FreeSurface( SDLSurface )
 SDL_DestroyRenderer( renderer )
 SDL_DestroyWindow( wnd )
 
 SDL_Quit()
 
-imageDestroy( pixels )
+imageDestroy( buffer )
