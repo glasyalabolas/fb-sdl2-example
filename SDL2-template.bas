@@ -3,8 +3,7 @@
 
 '' To get the pixel area of a Fb.Image buffer
 #define getPixels( b ) _
-  cptr( _
-    ulong ptr, _
+  cptr( ulong ptr, _
     ( b ) ) + sizeOf( Fb.Image ) \ sizeOf( ulong )
   
 const as string _
