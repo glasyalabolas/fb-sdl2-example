@@ -25,7 +25,7 @@ screenRes( _
 screenControl( _
   Fb.SET_ALPHA_PRIMITIVES, 1 )
 
-'' Create a SDL2window
+'' Create a SDL2 window
 var _
   wnd => SDL_CreateWindow( _
     exampleTitle, _
